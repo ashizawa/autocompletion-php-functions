@@ -118,7 +118,7 @@
 (defvar ac-source-php
   '((candidates
      . (lambda ()
-         (all-completions ac-target (append php-my-functions
+         (all-completions ac-target (append ;php-my-functions
                                             php-super-global-variable
                                             php-magical-constant
                                             php-defined-constant
