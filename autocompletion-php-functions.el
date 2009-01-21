@@ -40,6 +40,15 @@
 ;;     (defvar php-my-functions
 ;;       (sort (list (split-string text "\n"))) #'(lambda (a b) (> (length a) (length b))))
 ;;     )
+(defvar php-my-functions nil)
+
+(defvar functions-file "~/dotfiles/text/php-functions")
+
+(if (file-readable-p functions-file)
+  (with-temp-buffer
+    (insert-file-contents functions-file)
+    (setq php-my-functions (split-string (buffer-string) "\n")))
+)
 
 (defconst php-super-global-variable
   (sort
@@ -118,7 +127,7 @@
 (defvar ac-source-php
   '((candidates
      . (lambda ()
-         (all-completions ac-target (append ;php-my-functions
+         (all-completions ac-target (append php-my-functions
                                             php-super-global-variable
                                             php-magical-constant
                                             php-defined-constant
