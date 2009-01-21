@@ -26,6 +26,21 @@
 
 ;;; Code:
 
+;; (defvar function-file "~/.emacs.d/php-functions")
+;; (insert-file-contents "~/.emacs.d/php-functions")
+;; (setq function (split-string (insert-file-contents "~/.emacs.d/php-functions") "\n"))
+;; (add-hook 'after-init-hook
+;;           (lambda ()
+;;             (shell-command
+;;              "php -r 'foreach (get_defined_functions() as $vars) { foreach ($vars as $var) {echo \"$var\n\";}}' > \[function-file]")))
+
+;; (setq function-file "~/.emacs.d/php-functions")
+;; (if (file-readable-p function-file)
+;;     (setq text (insert-file-contents function-file))
+;;     (defvar php-my-functions
+;;       (sort (list (split-string text "\n"))) #'(lambda (a b) (> (length a) (length b))))
+;;     )
+
 (defconst php-super-global-variable
   (sort
    (list "$_SERVER" "$_GET" "$_POST" "$_FILES" "$_REQUEST" "$_SESSION" "$_ENV"
@@ -103,7 +118,8 @@
 (defvar ac-source-php
   '((candidates
      . (lambda ()
-         (all-completions ac-target (append php-super-global-variable
+         (all-completions ac-target (append php-my-functions
+                                            php-super-global-variable
                                             php-magical-constant
                                             php-defined-constant
                                             php-reserved-keywords)))
