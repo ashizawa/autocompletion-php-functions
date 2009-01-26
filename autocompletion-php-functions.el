@@ -26,29 +26,23 @@
 
 ;;; Code:
 
-;; (defvar function-file "~/.emacs.d/php-functions")
-;; (insert-file-contents "~/.emacs.d/php-functions")
-;; (setq function (split-string (insert-file-contents "~/.emacs.d/php-functions") "\n"))
-;; (add-hook 'after-init-hook
-;;           (lambda ()
-;;             (shell-command
-;;              "php -r 'foreach (get_defined_functions() as $vars) { foreach ($vars as $var) {echo \"$var\n\";}}' > \[function-file]")))
+(require 'auto-complete)
 
-;; (setq function-file "~/.emacs.d/php-functions")
-;; (if (file-readable-p function-file)
-;;     (setq text (insert-file-contents function-file))
-;;     (defvar php-my-functions
-;;       (sort (list (split-string text "\n"))) #'(lambda (a b) (> (length a) (length b))))
-;;     )
-(defvar php-my-functions nil)
+(defcustom complete-functions-file "~/.emacs.d/php-functions"
+  "completion file.")
 
-(defvar functions-file "~/dotfiles/text/php-functions")
-
-(if (file-readable-p functions-file)
-  (with-temp-buffer
-    (insert-file-contents functions-file)
-    (setq php-my-functions (split-string (buffer-string) "\n")))
-)
+(if (file-readable-p complete-functions-file)
+    (with-temp-buffer
+      (insert-file-contents complete-functions-file)
+      (setq php-my-functions (split-string (buffer-string) "\n")))
+  (if (file-writable-p complete-functions-file)
+      (with-temp-buffer
+        (setq php-my-functions (split-string (shell-command-to-string
+                                              (concat "php -r 'foreach (get_defined_functions() as $vars) { foreach ($vars as $var) {echo \"$var\n\";}}'")) "\n"))
+        (mapcar (lambda (l) (insert (format "%s\n" l))) php-my-functions)
+        (write-file complete-functions-file))
+    )
+  )
 
 (defconst php-super-global-variable
   (sort
@@ -137,8 +131,13 @@
 (add-hook 'php-mode-hook
           (lambda ()
             (make-local-variable 'ac-sources)
-            (setq ac-sources '(ac-source-php))))
+            (setq ac-sources '(ac-source-php
+                               ;;ac-source-yasnippet
+                               ac-source-abbrev
+                               ac-source-files-in-current-dir
+                               ac-source-words-in-buffer
+                               ac-source-filename))))
 
-;(provide 'autocomplete-php-function)
-;;; autocomplete-php-function.el ends here
+(provide 'autocompletion-php-functions)
+;;; autocompletion-php-functions.el ends here
 
